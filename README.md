@@ -1,6 +1,10 @@
 # Meli
 
-TODO: Write a gem description
+`Meli` gem implements MELI API (Official API available to interact with Mercadolibre) with ActiveResouce.
+
+
+[![Coverage Status](https://coveralls.io/repos/gullitmiranda/meli/badge.png)](https://coveralls.io/r/gullitmiranda/meli)
+[![Build Status](https://travis-ci.org/gullitmiranda/meli.svg)](https://travis-ci.org/gullitmiranda/meli)
 
 ## Installation
 
