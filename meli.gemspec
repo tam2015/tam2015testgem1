@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = Meli::VERSION
   spec.authors       = ["Gullit Miranda"]
   spec.email         = ["gullitmiranda@gmail.com"]
-  spec.summary       = %q{Connect to Mercadolibre through Meli API}
-  spec.description   = %q{Connect to Mercadolibre through Meli API}
-  spec.homepage      = ""
+  spec.summary       = %q{Meli gem interacts with the official API Mercadolibre.}
+  spec.description   = %q{Meli gem interacts with the official API Mercadolibre.}
+  spec.homepage      = "https://github.com/gullitmiranda/meli"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
@@ -29,5 +29,5 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "coveralls"
 
-  spec.add_runtime_dependency "crimp"
+  spec.add_runtime_dependency 'activeresource'#, '>= 4.0'
 end

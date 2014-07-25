@@ -1,10 +1,11 @@
 # Meli
-
-`Meli` gem implements MELI API (Official API available to interact with Mercadolibre) with ActiveResouce.
-
-
 [![Coverage Status](https://coveralls.io/repos/gullitmiranda/meli/badge.png)](https://coveralls.io/r/gullitmiranda/meli)
-[![Build Status](https://travis-ci.org/gullitmiranda/meli.svg)](https://travis-ci.org/gullitmiranda/meli)
+[![Build Status](https://travis-ci.org/gullitmiranda/meli.svg?branch=master)](https://travis-ci.org/gullitmiranda/meli)
+
+
+
+__Meli__ gem interacts with the official [API Mercadolibre](https://api.mercadolibre.com).
+
 
 ## Installation
 
@@ -19,6 +20,30 @@ And then execute:
 Or install it yourself as:
 
     $ gem install meli
+
+## Getting started
+
+MELI uses OAuth protocol for authentication, so you first need to get an access token.
+
+In order to do that you first need to instance the API:
+
+```ruby
+# config/initializers/meli.rb
+Meli.configure do
+  # Optional (is default)
+  # Site Country
+  # For other country check https://api.mercadolibre.com/sites/
+  config.site_id = "MLB"
+
+  # API url
+  config.endpoint_url = "https://api.mercadolibre.com"
+
+  # AUTH url
+  config.auth_url = "http://auth.mercadolivre.com.br/authorization"
+end
+```
+
+NOTE: All configs in [lib/config/meli.rb]( https://github.com/gullitmiranda/meli/blob/master/lib/config/meli.rb )
 
 ## Usage
 
