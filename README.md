@@ -45,6 +45,13 @@ end
 
 NOTE: All configs in [lib/config/meli.rb]( https://github.com/gullitmiranda/meli/blob/master/lib/config/meli.rb )
 
+## Models Structure
+
+  - __Meli::Category__ 
+    - GET: [ all, find(id), first, last ]
+  - __Meli::CategorySuggest__
+    - GET: [ find("query") ]
+
 ## Usage
 
 TODO: Write usage instructions here

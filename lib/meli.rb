@@ -18,6 +18,10 @@ module Meli
   # Core Models
   autoload :Collection
   autoload :Base
+
+  # Models
+  autoload :Category
+  autoload :CategorySuggest
 end
 
 require "config/meli"

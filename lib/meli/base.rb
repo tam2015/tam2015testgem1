@@ -12,13 +12,8 @@ module Meli
       # Meli grab the configuration
       delegate :config, to: :parent
 
-      def find_every(options)
-        options[:from] ||= collection_with_site_id
-        super
-      end
-
-      def collection_with_site_id
-        include_site_id ? "/sites/#{config.site_id}#{collection_path}" : collection_path
+      def collection_path(*args)
+        include_site_id ? "/sites/#{config.site_id}#{super}" : super
       end
 
       def instantiate_collection(collection, original_params = {}, prefix_options = {})
