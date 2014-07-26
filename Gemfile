@@ -8,3 +8,5 @@ group :development, :test do
   gem 'pry-remote', '~> 0.1.8'
   gem 'pry-nav', '~> 0.2.3', github: 'nixme/pry-nav'
 end
+
+gem "codeclimate-test-reporter", group: :test, require: nil

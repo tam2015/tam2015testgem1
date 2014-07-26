@@ -1,5 +1,6 @@
 # Meli
-[![Coverage Status](https://coveralls.io/repos/gullitmiranda/meli/badge.png)](https://coveralls.io/r/gullitmiranda/meli)
+[![Code Climate](https://codeclimate.com/github/gullitmiranda/meli.png)](https://codeclimate.com/github/gullitmiranda/meli)
+[![Test Coverage](https://codeclimate.com/github/gullitmiranda/meli/coverage.png)](https://codeclimate.com/github/gullitmiranda/meli)
 [![Build Status](https://travis-ci.org/gullitmiranda/meli.svg?branch=master)](https://travis-ci.org/gullitmiranda/meli)
 
 
