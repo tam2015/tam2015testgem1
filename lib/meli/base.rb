@@ -12,6 +12,28 @@ module Meli
       # Meli grab the configuration
       delegate :config, to: :parent
 
+
+      # add sites/:site_id to find_every
+      # ==== Examples:
+      #   Meli::Base.find(1)
+      #   # => GET /bases/1.json
+      #
+      #   Meli::Base.find(:all) or Meli::Base.all
+      #   # => GET /sites/MLB/bases.json
+      def include_site_id
+        if defined?(@include_site_id)
+          @include_site_id
+        # elsif superclass != Object && superclass.include_site_id
+        #   superclass.include_site_id.dup.freeze
+        else
+          false
+        end
+      end
+
+      def include_site_id=(include_site_id)
+        @include_site_id = !!include_site_id
+      end
+
       def collection_path(*args)
         include_site_id ? "/sites/#{config.site_id}#{super}" : super
       end
@@ -30,15 +52,6 @@ module Meli
     ### Default ActiveResource settings overrides
     self.include_format_in_path = false
     self.collection_parser = Meli::Collection
-
-    # add sites/:site_id to find_every
-    # ==== Examples:
-    #   Meli::Base.find(1)
-    #   # => GET /bases/1.json
-    #
-    #   Meli::Base.find(:all) or Meli::Base.all
-    #   # => GET /sites/MLB/bases.json
-    cattr_accessor(:include_site_id) { false }
 
     self.site= config.endpoint_url
   end
