@@ -8,6 +8,9 @@ rvm:
 - jruby-19mode
 - rbx-2
 
+env:
+  - CODECLIMATE_REPO_TOKEN=7ed87655d8dd0b8d070d0b22f4acb7765cda31ce1e80781d28347568413504e2
+
 script: bundle exec rake
 
 notifications:

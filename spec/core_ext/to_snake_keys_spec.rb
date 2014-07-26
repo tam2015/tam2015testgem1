@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 describe ToSnakeKeys do
   before do
     @item         = { "id"=>"MLB98647", "totalItemInThisCategory"      =>28, "name"=>['1ª e 2ª Geração", "3ª Geração'], "subItems" =>[] }
