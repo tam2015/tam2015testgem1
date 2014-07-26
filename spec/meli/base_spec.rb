@@ -16,4 +16,12 @@ describe Meli::Base do
   it "collection_path with include_site_id" do
     expect(@klass.collection_path).to eq("/sites/MLB/anothers")
   end
+
+  it "should attribute name" do
+    item_with_name    = @klass.new({ name: "Data Name" })
+    item_without_name = @klass.new({ data: "Data Name" })
+
+    expect(   item_with_name.name).to eql("Data Name")
+    expect(item_without_name.name).to eql("Meli::Another")
+  end
 end
