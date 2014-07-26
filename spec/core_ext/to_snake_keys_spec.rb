@@ -1,7 +1,7 @@
 describe ToSnakeKeys do
   before do
-    @item         = {"id"=>"MLB98647", "totalItemInThisCategory"=>28, "name"=>["1ª e 2ª Geração", "3ª Geração"], "subItems"=>[]}
-    @snaked_item  = {"id"=>"MLB98647", "total_item_in_this_category"=>28, "name"=>["1ª e 2ª Geração", "3ª Geração"], "sub_items"=>[]}
+    @item         = { "id"=>"MLB98647", "totalItemInThisCategory"      =>28, "name"=>['1ª e 2ª Geração", "3ª Geração'], "subItems" =>[] }
+    @snaked_item  = { "id"=>"MLB98647", "total_item_in_this_category"  =>28, "name"=>['1ª e 2ª Geração", "3ª Geração'], "sub_items"=>[] }
 
     @hash   = @item.merge       ({ "subItems" =>[@item, @item] })
     @snaked = @snaked_item.merge({ "sub_items"=>[@snaked_item, @snaked_item] })
