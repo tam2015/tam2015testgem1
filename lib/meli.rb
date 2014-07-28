@@ -18,6 +18,8 @@ module Meli
   # Core Models
   autoload :Collection
   autoload :Base
+  autoload :Item
+  autoload :User
 
   # Models
   autoload :Category

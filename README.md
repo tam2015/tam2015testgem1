@@ -61,6 +61,11 @@ NOTE: All configs in [lib/config/meli.rb]( https://github.com/gullitmiranda/meli
     - GET: [ all, find(id), first, last ]
   - __Meli::CategorySuggest__
     - GET: [ find("query") ]
+  - __Meli::Item__ 
+    - GET: [ all(filters), find(id), first, last, all_ids(filters) ]
+  - __Meli::User__ 
+    - GET: [ find(id), me ]
+      + Notes: `User.me` is `User.find("me")` alias
 
 ## Usage
 
