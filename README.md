@@ -31,16 +31,25 @@ In order to do that you first need to instance the API:
 ```ruby
 # config/initializers/meli.rb
 Meli.configure do
+  # REQUIRED for authentication
+  config.client_id      = ENV['MERCADOLIBRE_APP_ID'       ]
+  config.client_secret  = ENV['MERCADOLIBRE_APP_SECRET'   ]
+  config.callback_url   = ENV['MERCADOLIBRE_CALLBACK_URL' ]
+
+
   # Optional (is default)
   # Site Country
   # For other country check https://api.mercadolibre.com/sites/
   config.site_id = "MLB"
 
   # API url
-  config.endpoint_url = "https://api.mercadolibre.com"
+  config.site = "https://api.mercadolibre.com"
 
   # AUTH url
-  config.auth_url = "http://auth.mercadolivre.com.br/authorization"
+  config.authorize_url   = "http://auth.mercadolivre.com.br/authorization"
+  config.token_url  = "/oauth/token"
+
+  config.after_refresh_token = nil
 end
 ```
 

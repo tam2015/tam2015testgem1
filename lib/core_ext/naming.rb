@@ -35,7 +35,7 @@ module CoreExt
 
     module InstanceMethods
       def initialize(*args)
-        super *args
+        super(*args)
 
         # delegate :model_name and :name to class without attributes with keys
         class_eval { delegate :model_name , to: :class } unless respond_to? :model_name
