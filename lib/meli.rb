@@ -16,6 +16,7 @@ module Meli
 
 
   # Core Models
+  autoload :AccessToken
   autoload :Collection
   autoload :Base
   autoload :Item

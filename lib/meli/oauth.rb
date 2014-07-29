@@ -1,4 +1,3 @@
-require 'oauth2'
 module Meli
   class Oauth < ActiveResource::Base
 
@@ -6,7 +5,7 @@ module Meli
 
     def self.oauth_connection= credentials
       if credentials.is_a? Hash
-        credentials = OAuth2::AccessToken.from_hash client, credentials
+        credentials = Meli::AccessToken.from_hash client, credentials
       end
       @@oauth_connection = credentials
       connection(true)
@@ -66,10 +65,21 @@ module Meli
 
   private
     def request(method, path, *arguments)
+      puts "\n\n\n ---> connection #{@oauth_connection}"
+      puts " ---> self #{self}"
+      puts " ---> method #{method}"
+      puts " ---> path #{path}"
+      puts " ---> arguments #{arguments}"
+      puts " ---> site #{site.inspect}"
+      puts "\n\n ---> self #{self.inspect} \n\n"
+      puts " ---> request @use_oauth=#{@use_oauth}\n\n"
       if @use_oauth
         if @oauth_connection == nil
           raise ArgumentError, "@oauth_connection was required for authentication."
         else
+          puts " ---> with auth -----"
+          puts " ---> expired? #{@oauth_connection.expired?} -----"
+
           if @oauth_connection.expired?
             @oauth_connection = @oauth_connection.refresh!
           end
@@ -82,6 +92,7 @@ module Meli
           @oauth_connection.send(method, path, *arguments)
         end
       else
+        puts " ---> no auth ----"
         super(method, path, *arguments)
       end
 
