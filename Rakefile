@@ -7,4 +7,6 @@ RSpec::Core::RakeTask.new(:spec) do |task|
   task.rspec_opts = ['--color']
 end
 
+ENV["RACK_ENV"] = "test"
+
 task :default => :spec
