@@ -24,4 +24,14 @@ describe Meli::Base do
     expect(   item_with_name.name).to eql("Data Name")
     expect(item_without_name.name).to eql("Meli::Another")
   end
+
+  it "attribute changes" do
+    item_with_name    = @klass.new({ name: "Name" })
+
+    expect(item_with_name.changes).to eq({})
+
+    item_with_name.name = "Full Name"
+
+    expect(item_with_name.changes).to eq({ "name" => ["Name", "Full Name"] })
+  end
 end

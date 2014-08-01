@@ -5,6 +5,8 @@ module Meli
     extend ActiveModel::Naming
     include CoreExt::Naming
 
+    include ActiveModel::Dirty
+
     # Load Configs
     # class grab the configuration
     delegate :config, to: :class
@@ -142,12 +144,145 @@ module Meli
         end.collect! { |record| instantiate_record(record, prefix_options) }
       end
 
+
+      def load(attributes, remove_root = false, persisted = false)
+        raise ArgumentError, "expected an attributes Hash, got #{attributes.inspect}" unless attributes.is_a?(Hash)
+        @prefix_options, attributes = split_options(attributes)
+
+        if attributes.keys.size == 1
+          remove_root = self.class.element_name == attributes.keys.first.to_s
+        end
+
+        attributes = Formats.remove_root(attributes) if remove_root
+
+        attributes.each do |key, value|
+          attr_value =  case value
+                          when Array
+                            resource = nil
+                            value.map do |attrs|
+                              if attrs.is_a?(Hash)
+                                resource ||= find_or_create_resource_for_collection(key)
+                                resource.new(attrs, persisted)
+                              else
+                                attrs.duplicable? ? attrs.dup : attrs
+                              end
+                            end
+                          when Hash
+                            resource = find_or_create_resource_for(key)
+                            resource.new(value, persisted)
+                          else
+                            value.duplicable? ? value.dup : value
+                        end
+
+          self.send("#{key.to_s}", attr_value)
+        end
+
+        @default_attributes = @attributes
+
+        define_attribute_methods @attributes.symbolize_keys.keys
+
+        self
+      end
+
     end
+
+
+
+
+    # InstanceMethods
 
     ### Default ActiveResource settings overrides
     self.include_format_in_path = false
     self.collection_parser = Meli::Collection
 
     self.site= config.site
+
+
+
+    def attribute(attribute_name)
+      attributes[attribute_name]# if attributes.include? attribute_name
+    end
+
+    def save
+      saved = super
+
+      # do persistence work
+      changes_applied if saved
+      saved
+    end
+
+    def attributes_changed
+      ActiveSupport::HashWithIndifferentAccess[changed.map { |attr| [attr, __send__(attr)] }]
+    end
+
+    def encode_changes(options={})
+      attributes_changed.send("to_#{self.class.format.extension}", options)
+    end
+
+    # A method to \reload the attributes of this object from the remote web service.
+    alias_method :reload!, :reload
+
+    # Reset changes
+    def reload
+      reset_changes
+    end
+
+
+    protected
+
+      # Update the resource on the remote service.
+      def update
+        run_callbacks :update do
+          connection.put(element_path(prefix_options), encode_changes, self.class.headers).tap do |response|
+            load_attributes_from_response(response)
+          end
+        end
+      end
+
+      # Load attributes from Response or OAuth2::Response
+      def load_attributes_from_oauth2_response(response)
+        if (response_code_allows_body?(response.status) &&
+            (response.headers["content-length"].nil? || response.headers["content-length"] != "0") &&
+            !response.body.nil? && response.body.strip.size > 0)
+          load(self.class.format.decode(response.body), true, true)
+          @persisted = true
+        end
+      end
+
+      def load_attributes_from_response(response)
+        if response.is_a? OAuth2::Response
+          load_attributes_from_oauth2_response response
+        else
+          super response
+        end
+      end
+
+
+
+      def method_missing(method_symbol, *arguments) #:nodoc:
+        method_name = method_symbol.to_s
+
+        if method_name =~ /(=|\?|<<)$/
+          case $1
+          when "="
+            class_eval do
+              define_attribute_method $`.to_sym
+            end
+            self.send("#{$`}_will_change!") unless arguments.first == attribute($`)
+            attributes[$`] = arguments.first
+          when "<<"
+            val = attribute($`) + arguments.first
+            self.send("#{$`}=", )
+          when "?"
+            attributes[$`]
+          end
+        else
+          return attribute(method_name) if attributes.include?(method_name)
+          # return attributes[method_name] if attributes.include?(method_name)
+          # not set right now but we know about it
+          return nil if known_attributes.include?(method_name)
+          super
+        end
+      end
   end
 end
