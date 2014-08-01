@@ -65,10 +65,21 @@ module Meli
 
   private
     def request(method, path, *arguments)
+      puts "\n\n\n ---> connection #{@oauth_connection}"
+      puts " ---> self #{self}"
+      puts " ---> method #{method}"
+      puts " ---> path #{path}"
+      puts " ---> arguments #{arguments}"
+      puts " ---> site #{site.inspect}"
+      puts "\n\n ---> self #{self.inspect} \n\n"
+      puts " ---> request @use_oauth=#{@use_oauth}\n\n"
       if @use_oauth
         if @oauth_connection == nil
           raise ArgumentError, "@oauth_connection was required for authentication."
         else
+          puts " ---> with auth -----"
+          puts " ---> expired? #{@oauth_connection.expired?} -----"
+
           if @oauth_connection.expired?
             @oauth_connection = @oauth_connection.refresh!
           end
@@ -83,9 +94,13 @@ module Meli
                 payload.merge!(argument)
             end
           end
+
+          puts " ---> payload to send: #{[payload]}"
+
           @oauth_connection.send(method, path, payload)
         end
       else
+        puts " ---> no auth ----"
         super(method, path, *arguments)
       end
 
