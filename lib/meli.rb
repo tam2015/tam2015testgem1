@@ -7,6 +7,7 @@ require 'active_support/inflector'
 require "json"
 
 # overrides
+require 'oauth2/response_extend.rb'
 require 'core_ext'
 
 module Meli
