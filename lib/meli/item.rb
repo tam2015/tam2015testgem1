@@ -80,8 +80,12 @@ module Meli
     def self.find_single(scope, options, instantiate=true)
       prefix_options, query_options = split_options(options[:params])
       path = element_path(scope, prefix_options, query_options)
-      decoded = format.decode(connection.get(path, headers).body)
-      instantiate_record(decoded, prefix_options) if instantiate
+      record = format.decode(connection.get(path, headers).body)
+      if instantiate
+        instantiate_record(record, prefix_options)
+      else
+        record
+      end
     end
   end
 end

@@ -64,6 +64,7 @@ module Meli
     end
 
   private
+
     def request(method, path, *arguments)
       puts "\n\n\n ---> connection #{@oauth_connection}"
       puts " ---> self #{self}"
