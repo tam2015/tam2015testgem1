@@ -12,8 +12,6 @@ module Meli
       puts " ---> refresh! #{new_token} -----"
 
       # Callback
-      Meli::Base.oauth_connection = new_token
-
       if Meli.config.after_refresh_token and Meli.config.after_refresh_token.respond_to? :call
         Meli.config.after_refresh_token.call new_token, self
       end
