@@ -23,3 +23,7 @@ mkmf.log
 
 # Sublime wordspace
 /*.sublime-workspace
+
+
+# tmp lib files
+lib/**/_*
