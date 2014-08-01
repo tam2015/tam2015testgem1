@@ -63,7 +63,7 @@ module Meli
 
       all_ids(options) do |partial_ids, data, opts|
         partial_items = partial_ids.map do |id|
-          find_single(id, options)
+          find_single(id, options, false)
         end
 
         if block_given?
@@ -77,10 +77,11 @@ module Meli
     end
 
     # Find a single resource from the default URL
-    def self.find_single(scope, options)
+    def self.find_single(scope, options, instantiate=true)
       prefix_options, query_options = split_options(options[:params])
       path = element_path(scope, prefix_options, query_options)
-      format.decode(connection.get(path, headers).body)
+      decoded = format.decode(connection.get(path, headers).body)
+      instantiate_record(decoded, prefix_options) if instantiate
     end
   end
 end
