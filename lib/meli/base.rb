@@ -203,6 +203,20 @@ module Meli
       attributes[attribute_name]# if attributes.include? attribute_name
     end
 
+    def serializable_hash(options={})
+      ActiveSupport::HashWithIndifferentAccess[super.map { |record| recursive_serializable_hash(record, options) }]
+    end
+
+    def recursive_serializable_hash(record, *args)
+      if record.is_a? Array
+        record.map! {|v| recursive_serializable_hash(v, *args)  }
+      elsif record.respond_to?(:serializable_hash)
+        record.serializable_hash(*args)
+      else
+        record
+      end
+    end
+
     def save
       saved = super
 
@@ -283,6 +297,16 @@ module Meli
           return nil if known_attributes.include?(method_name)
           super
         end
+      end
+
+    private
+
+      # Create and return a class definition for a resource inside the current resource
+      def create_resource_for(resource_name)
+        resource = self.class.const_set(resource_name, Class.new(Meli::Base))
+        resource.prefix = self.class.prefix
+        resource.site   = self.class.site
+        resource
       end
   end
 end
