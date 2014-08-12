@@ -143,7 +143,25 @@ module Meli
       end
 
       def find_every(options, &block)
-        super options
+        collection = super options
+        if block_given?
+          # resoucers, data, options
+          yield(collection, {}, options)
+        end
+        collection
+      end
+
+
+      # Find a single resource from the default URL with optional instantiate
+      def self.find_single(scope, options, instantiate=true)
+        prefix_options, query_options = split_options(options[:params])
+        path = element_path(scope, prefix_options, query_options)
+        record = format.decode(connection.get(path, headers).body)
+        if instantiate
+          instantiate_record(record, prefix_options)
+        else
+          record
+        end
       end
 
 
