@@ -1,16 +1,6 @@
 module Meli
   class Item < Meli::Base
-    cattr_accessor :user
-    cattr_accessor :user_id
-
-
     self.use_oauth = true
-    # self.prefix= "/users/:user_id/"
-    #
-    def self.user_id
-      @user_id || User.me.id
-    end
-
 
 
     # Get all item ids
@@ -22,13 +12,12 @@ module Meli
     #   :pages_limit  [Integer] default: -1 (-1 no limite)  - limit of pages to be requested
 
     def self.all_ids(options={}, &block)
-      # user_id = options[:user_id] if options[:user_id]
+      user_id = options.delete(:user_id) || User.me.id
 
       options.reverse_merge!({limit: 50,
                               offset: 0,
                               pages: -1,
-                              page:   0,
-                              user_id: user_id })
+                              page:   0 })
 
       from = "/users/#{user_id}#{collection_path}/search"
 

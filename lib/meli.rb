@@ -21,6 +21,7 @@ module Meli
   autoload :Collection
   autoload :Base
   autoload :Item
+  autoload :Ordem
   autoload :User
 
   # Models
