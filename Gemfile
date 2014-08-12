@@ -9,4 +9,4 @@ group :development, :test do
   gem 'pry-nav', '~> 0.2.3', github: 'nixme/pry-nav'
 end
 
-gem "codeclimate-test-reporter", group: :test, require: nil
+# gem "codeclimate-test-reporter", group: :test, require: nil
