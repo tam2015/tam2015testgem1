@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["gullitmiranda@gmail.com"]
   spec.summary       = %q{Meli gem interacts with the official API Mercadolibre.}
   spec.description   = %q{Meli gem interacts with the official API Mercadolibre.}
-  spec.homepage      = "https://github.com/gullitmiranda/meli"
+  spec.homepage      = "https://bitbucket.org/aircrm/meli"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
