@@ -44,6 +44,19 @@ module Meli
 
 
 
+      # Cached user_id
+      # cattr_accessor :user_id
+      def user_id=(id)
+        @@user_id= id
+      end
+
+      def user_id
+        @@user_id || User.me.id
+      end
+
+      def user_id?
+        !!user_id
+      end
 
 
 
