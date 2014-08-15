@@ -28,5 +28,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'guard-rspec', '~> 4.3', '>= 4.3.1'
 
   spec.add_runtime_dependency 'activeresource', '~> 4.0', '>= 4.0.0'
-  spec.add_runtime_dependency 'oauth2', '~> 0.9', '>= 0.9.3'
+  spec.add_runtime_dependency 'oauth2', '~> 1.0', '>= 1.0.0'
 end
