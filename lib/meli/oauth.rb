@@ -7,13 +7,13 @@ module Meli
       if credentials.is_a? Hash
         credentials = Meli::AccessToken.from_hash client, credentials
       end
-      @@oauth_connection = credentials
+      Thread.current[:oauth_connection] = credentials
       connection(true)
-      @@oauth_connection
+      Thread.current[:oauth_connection]
     end
 
     def self.oauth_connection
-      @@oauth_connection
+      Thread.current[:oauth_connection]
     end
 
     def self.use_oauth= use_oauth
@@ -40,10 +40,18 @@ module Meli
       @client = client
     end
 
+
+    def self.connection?
+      !!Thread.current[:connection]
+    end
+
     def self.connection(refresh = false)
-      @connection = Connection.new(@@oauth_connection, @use_oauth, site, format) if @connection.nil? || refresh
-      @connection.timeout = timeout if timeout
-      return @connection
+      if !connection? || refresh
+        Thread.current[:connection] = Connection.new(oauth_connection, use_oauth, site, format)
+      end
+      Thread.current[:connection].timeout = timeout if timeout
+      Thread.current[:connection].use_oauth = use_oauth
+      return Thread.current[:connection]
     end
 
     def format=(mime_type_reference_or_format)
@@ -63,23 +71,32 @@ module Meli
       super(*args)
     end
 
+    def use_oauth
+      @use_oauth
+    end
+
+    def use_oauth= use_oauth
+      @use_oauth= use_oauth
+    end
+
   private
 
     def request(method, path, *arguments)
-      puts "\n\n\n ---> connection #{@oauth_connection}"
-      puts " ---> self #{self}"
+      puts "\n\n\n ---> connection #{@oauth_connection.inspect}"
+      puts " ---> self #{self.inspect}"
       puts " ---> method #{method}"
       puts " ---> path #{path}"
+      puts " ---> token #{@oauth_connection.token}"
+      puts " ---> use_oauth #{@use_oauth}"
       puts " ---> arguments #{arguments}"
       puts " ---> site #{site.inspect}"
-      puts "\n\n ---> self #{self.inspect} \n\n"
-      puts " ---> request @use_oauth=#{@use_oauth}\n\n"
       if @use_oauth
         if @oauth_connection == nil
           raise ArgumentError, "@oauth_connection was required for authentication."
         else
           puts " ---> with auth -----"
-          puts " ---> expired? #{@oauth_connection.expired?} -----"
+          puts " ---> expired? #{@oauth_connection.expired?}"
+          puts " ---> token #{@oauth_connection.token}"
 
           if @oauth_connection.expired?
             @oauth_connection = @oauth_connection.refresh!
