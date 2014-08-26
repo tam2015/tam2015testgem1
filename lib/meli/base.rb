@@ -317,7 +317,7 @@ module Meli
             attributes[$`] = arguments.first
           when "<<"
             val = attribute($`) + arguments.first
-            self.send("#{$`}=", )
+            self.send("#{$`}=", val)
           when "?"
             attributes[$`]
           end
