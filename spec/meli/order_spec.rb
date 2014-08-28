@@ -6,12 +6,14 @@ describe Meli::Order do
   end
 
   it "should options" do
+    @klass.user_id= "158748360"
+
     expect(@klass.options).to eq({limit: 50,
                                   offset: 0,
                                   pages: -1,
                                   page:   0,
                                   kind:   [:recent, :archived],
-                                  seller: nil })
+                                  seller: "158748360" })
   end
 
   it "should options seller" do

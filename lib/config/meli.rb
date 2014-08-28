@@ -5,7 +5,7 @@ Meli.configure do |config|
   config.callback_url   = ENV['MERCADOLIBRE_CALLBACK_URL' ]
 
   # Envs for development
-  if ENV["RACK_ENV"] == "test" and ENV["RACK_ENV"] != "production"
+  if ENV["RACK_ENV"] != "test" and ENV["RACK_ENV"] != "production"
     config.client_id      = "1551683306174268"
     config.client_secret  = "jVig8f30muP7JXgk8AsP6R4icK9wDj2C"
   end

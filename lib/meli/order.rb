@@ -2,6 +2,8 @@ module Meli
   class Order < Meli::Base
     self.use_oauth = true
 
+    has_many :shipments, class_name: "Meli::Shipment"
+
     cattr_accessor :options
 
     def self.default_options
@@ -77,6 +79,31 @@ module Meli
       end
 
       instantiate_collection( collection )
+    end
+
+
+
+
+    # InstanceMethods
+    # Associations
+
+    # cache shipments
+    def shipments(force=false)
+      if !force and defined? @shipment
+        @shipment
+      elsif force or (self.shipping? and Shipment.possible_status.include? self.shipping.status)
+        @shipment = super
+      end
+    end
+
+    def shipment
+      Shipment
+    end
+
+    def shipment_build(attributes={})
+      shipment = Shipment.new attributes
+      shipment.order= self
+      shipment
     end
   end
 end

@@ -115,7 +115,10 @@ module Meli
 
           puts " ---> payload to send: #{[payload]}"
 
-          @oauth_connection.send(method, path, payload)
+          response = @oauth_connection.send(method, path, payload)
+          puts " ---> response: #{response.inspect}"
+          puts " ---> response.body: #{response.body}"
+          response
         end
       else
         puts " ---> no auth ----"

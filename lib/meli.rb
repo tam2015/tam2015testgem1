@@ -22,6 +22,7 @@ module Meli
   autoload :Base
   autoload :Item
   autoload :Order
+  autoload :Shipment
   autoload :User
 
   # Models
