@@ -307,6 +307,9 @@ module Meli
       def method_missing(method_symbol, *arguments) #:nodoc:
         method_name = method_symbol.to_s
 
+        # OPTIMIZE: Don't use the cryptic Perl-legacy variables denoting last
+        #   regexp group matches ($1, $2, etc). Use Regexp.last_match[n] instead.
+        # https://github.com/bbatsov/ruby-style-guide#no-perl-regexp-last-matchers
         if method_name =~ /(=|\?|<<)$/
           case $1
           when "="
