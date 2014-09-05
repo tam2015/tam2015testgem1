@@ -13,7 +13,7 @@ module Meli
       private
 
         # Find a single resource from the default URL
-        def find_single(scope, options)
+        def find_single(scope, options, instantiate=true)
           # move scope to query_string
           options = scope_to_params scope, options
 

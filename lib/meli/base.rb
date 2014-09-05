@@ -153,7 +153,7 @@ module Meli
 
 
       # Find a single resource from the default URL with optional instantiate
-      def self.find_single(scope, options, instantiate=true)
+      def find_single(scope, options, instantiate=true)
         prefix_options, query_options = split_options(options[:params])
         path = element_path(scope, prefix_options, query_options)
         record = format.decode(connection.get(path, headers).body)
