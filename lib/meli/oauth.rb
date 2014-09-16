@@ -3,6 +3,10 @@ module Meli
 
     @@oauth_connection = nil
 
+    self.ssl_options= {
+      version: "SSLv3"
+    }
+
     def self.oauth_connection= credentials
       if credentials.is_a? Hash
         credentials = Meli::AccessToken.from_hash client, credentials
@@ -30,7 +34,9 @@ module Meli
       else
         raise ArgumentError, "It requires a config.client_id, config.client_secret. Please check your \"config/meli.rb\" file." if !config.client_id or !config.client_secret
 
-        options = {  }.merge(config)
+        options = {
+          ssl: ssl_options
+       }.merge(config)
 
         @client= OAuth2::Client.new(options.delete(:client_id), config.delete(:client_secret), options)
       end
