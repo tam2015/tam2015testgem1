@@ -92,7 +92,7 @@ module Meli
       puts " ---> self #{self.inspect}"
       puts " ---> method #{method}"
       puts " ---> path #{path}"
-      puts " ---> token #{@oauth_connection.token}"
+      puts " ---> token #{@oauth_connection.token}" if @oauth_connection
       puts " ---> use_oauth #{@use_oauth}"
       puts " ---> arguments #{arguments}"
       puts " ---> site #{site.inspect}"
