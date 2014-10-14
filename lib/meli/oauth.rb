@@ -1,15 +1,24 @@
 module Meli
   class Oauth < ActiveResource::Base
+    attr_accessor :auth_client
+    cattr_accessor :auth_ssl_options
 
     @@oauth_connection = nil
 
+    # @@auth_ssl_options= {
+    #   ssl: { version: "SSLv3"}
+    # }
+    self.auth_ssl_options= {
+      ssl: { version: "SSLv3"}
+    }
+
     self.ssl_options= {
-      version: "SSLv3"
+      ssl_version: 'SSLv3'
     }
 
     def self.oauth_connection= credentials
       if credentials.is_a? Hash
-        credentials = Meli::AccessToken.from_hash client, credentials
+        credentials = Meli::AccessToken.from_hash auth_client, credentials
       end
       Thread.current[:oauth_connection] = credentials
       connection(true)
@@ -28,36 +37,53 @@ module Meli
       @use_oauth || false
     end
 
-    def self.client
-      if defined? @client
-        @client
+    def self.auth_client
+      if defined? @auth_client
+        @auth_client
       else
         raise ArgumentError, "It requires a config.client_id, config.client_secret. Please check your \"config/meli.rb\" file." if !config.client_id or !config.client_secret
 
-        options = {
-          ssl: ssl_options
-       }.merge(config)
+        options = (auth_ssl_options || {}).merge(config)
 
-        @client= OAuth2::Client.new(options.delete(:client_id), config.delete(:client_secret), options)
+        @auth_client = OAuth2::Client.new(options.delete(:client_id), config.delete(:client_secret), options)
       end
     end
 
-    def self.client=(client)
-      @client = client
+    def self.auth_client=(auth_client)
+      @auth_client = auth_client
     end
 
-
     def self.connection?
-      !!Thread.current[:connection]
+      if use_oauth
+        !!Thread.current[:auth_connection]
+      else
+        !!Thread.current[:connection]
+      end
+    end
+
+    def self.refresh_connection
+      Thread.current[:auth_connection ] = Connection.new(oauth_connection, true, site, format)
+      Thread.current[:connection      ] = Connection.new(nil, use_oauth, site, format)
+
+      [:auth_connection, :connection].each do |name|
+        Thread.current[name].proxy       = proxy        if proxy
+        Thread.current[name].user        = user         if user
+        Thread.current[name].password    = password     if password
+        Thread.current[name].auth_type   = auth_type    if auth_type
+        Thread.current[name].ssl_options = ssl_options  if ssl_options
+        Thread.current[name].timeout     = timeout      if timeout
+        Thread.current[name].use_oauth   = use_oauth    if use_oauth
+      end
+
+      Thread.current[use_oauth ? :auth_connection : :connection]
     end
 
     def self.connection(refresh = false)
-      if !connection? || refresh
-        Thread.current[:connection] = Connection.new(oauth_connection, use_oauth, site, format)
-      end
-      Thread.current[:connection].timeout = timeout if timeout
-      Thread.current[:connection].use_oauth = use_oauth
-      return Thread.current[:connection]
+      thread_name = use_oauth ? :auth_connection : :connection
+
+      refresh_connection if !Thread.current[thread_name] || refresh
+
+      Thread.current[thread_name]
     end
 
     def format=(mime_type_reference_or_format)
