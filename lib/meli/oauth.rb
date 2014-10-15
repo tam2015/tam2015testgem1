@@ -5,9 +5,6 @@ module Meli
 
     @@oauth_connection = nil
 
-    # @@auth_ssl_options= {
-    #   ssl: { version: "SSLv3"}
-    # }
     self.auth_ssl_options= {
       ssl: { version: "SSLv3"}
     }
@@ -81,12 +78,16 @@ module Meli
     end
 
     def self.connection(refresh = false)
+      if refresh
+        refresh_auth_connection
+        refresh_connection
+      end
+
       if use_oauth
-        refresh_auth_connection if !Thread.current[:auth_connection] || refresh
+        refresh_auth_connection if !Thread.current[:auth_connection]
         Thread.current[:auth_connection]
       else
-        refresh_connection if refresh || @connection.nil?
-
+        refresh_connection if @connection.nil?
         @connection
       end
     end
