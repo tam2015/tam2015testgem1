@@ -120,15 +120,16 @@ module Meli
   private
 
     def request(method, path, *arguments)
-      puts "\n\n\n ---> connection #{@oauth_connection.inspect}"
-      puts " ---> self #{self.inspect}"
-      puts " ---> method #{method}"
-      puts " ---> path #{path}"
-      puts " ---> token #{@oauth_connection.token}" if @oauth_connection
+      puts "\n\n\n"
       puts " ---> use_oauth #{@use_oauth}"
+      puts " ---> path #{path}"
       puts " ---> arguments #{arguments}"
       puts " ---> site #{site.inspect}"
+      puts " ---> self #{self.inspect}"
+      puts " ---> method #{method}"
       if @use_oauth
+        puts " ---> oauth_connection #{@oauth_connection.inspect}"
+        puts " ---> token #{@oauth_connection.token}" if @oauth_connection
         if @oauth_connection == nil
           raise ArgumentError, "@oauth_connection was required for authentication."
         else
@@ -159,7 +160,7 @@ module Meli
           response
         end
       else
-        puts " ---> no auth ----"
+        puts " ---> connection #{@connection.inspect}"
         super(method, path, *arguments)
       end
 
