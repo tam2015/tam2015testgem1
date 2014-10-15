@@ -57,33 +57,38 @@ module Meli
       if use_oauth
         !!Thread.current[:auth_connection]
       else
-        !!Thread.current[:connection]
+        !!@connection
       end
     end
 
     def self.refresh_connection
-      Thread.current[:auth_connection ] = Connection.new(oauth_connection, true, site, format)
-      Thread.current[:connection      ] = Connection.new(nil, use_oauth, site, format)
+      @connection = Connection.new(nil, use_oauth, site, format)
+      @connection.timeout     = timeout     if timeout
+      @connection.use_oauth   = use_oauth   if use_oauth
+      @connection.ssl_options = ssl_options if ssl_options and site and site.scheme == "https"
+    end
 
-      [:auth_connection, :connection].each do |name|
-        Thread.current[name].proxy       = proxy        if proxy
-        Thread.current[name].user        = user         if user
-        Thread.current[name].password    = password     if password
-        Thread.current[name].auth_type   = auth_type    if auth_type
-        Thread.current[name].ssl_options = ssl_options  if ssl_options
-        Thread.current[name].timeout     = timeout      if timeout
-        Thread.current[name].use_oauth   = use_oauth    if use_oauth
-      end
-
-      Thread.current[use_oauth ? :auth_connection : :connection]
+    def self.refresh_auth_connection
+      Thread.current[:auth_connection] = Connection.new(oauth_connection, true, site, format)
+      Thread.current[:auth_connection].proxy       = proxy        if proxy
+      Thread.current[:auth_connection].user        = user         if user
+      Thread.current[:auth_connection].password    = password     if password
+      Thread.current[:auth_connection].auth_type   = auth_type    if auth_type
+      Thread.current[:auth_connection].ssl_options = ssl_options  if ssl_options
+      Thread.current[:auth_connection].timeout     = timeout      if timeout
+      Thread.current[:auth_connection].use_oauth   = use_oauth    if use_oauth
+      Thread.current[:auth_connection]
     end
 
     def self.connection(refresh = false)
-      thread_name = use_oauth ? :auth_connection : :connection
+      if use_oauth
+        refresh_auth_connection if !Thread.current[:auth_connection] || refresh
+        Thread.current[:auth_connection]
+      else
+        refresh_connection if refresh || @connection.nil?
 
-      refresh_connection if !Thread.current[thread_name] || refresh
-
-      Thread.current[thread_name]
+        @connection
+      end
     end
 
     def format=(mime_type_reference_or_format)
