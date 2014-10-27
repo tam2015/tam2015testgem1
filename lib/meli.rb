@@ -20,6 +20,7 @@ module Meli
   autoload :AccessToken
   autoload :Collection
   autoload :Base
+  autoload :Site
   autoload :Item
   autoload :Description
   autoload :Order
