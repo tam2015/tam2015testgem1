@@ -27,3 +27,4 @@ mkmf.log
 
 # tmp lib files
 lib/**/_*
+/vendor

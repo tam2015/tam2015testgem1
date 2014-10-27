@@ -132,8 +132,10 @@ module Meli
     end
 
     def description
-      @description_klass = find_or_create_resource_for_collection(:description)
-      @description_klass.find_every(params: { item_id: self.id }).first
+      unless descriptions.empty?
+        @description_klass = find_or_create_resource_for_collection(:description)
+        @description_klass.find_every(params: { item_id: self.id }).first
+      end
     end
   end
 end

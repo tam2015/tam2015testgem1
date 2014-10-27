@@ -42,7 +42,7 @@ module Meli
 
         options = (auth_ssl_options || {}).merge(config)
 
-        @auth_client = OAuth2::Client.new(options.delete(:client_id), config.delete(:client_secret), options)
+        @auth_client = OAuth2::Client.new(options.delete(:client_id), options.delete(:client_secret), options)
       end
     end
 

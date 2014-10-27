@@ -5,10 +5,10 @@ Meli.configure do |config|
   config.callback_url   = ENV['MERCADOLIBRE_CALLBACK_URL' ]
 
   # Envs for development
-  if ENV["RACK_ENV"] != "test" and ENV["RACK_ENV"] != "production"
-    config.client_id      = "1551683306174268"
-    config.client_secret  = "jVig8f30muP7JXgk8AsP6R4icK9wDj2C"
-  end
+  # if ENV["RACK_ENV"] != "test" and ENV["RACK_ENV"] != "production"
+  #   config.client_id      = "5227026097385184"
+  #   config.client_secret  = "6PLlf1ybZP9RyM6jZYvxHpUDgejpEuP5"
+  # end
 
   # Site Country
   # For other country check https://api.mercadolibre.com/sites/
