@@ -1,9 +1,11 @@
 require "oauth2"
 
+# Extend OAuth2::Response to provide compatibility between the two modes of
+# connection, authenticating and unauthenticated.
 module ResponseExtend
   extend ActiveSupport::Concern
 
-  # The HTTP response status code
+  # Alias to response.status
   def code
     response.status
   end

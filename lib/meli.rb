@@ -20,6 +20,8 @@ module Meli
   autoload :AccessToken
   autoload :Collection
   autoload :Base
+
+  # Models
   autoload :Site
   autoload :Item
   autoload :Description
@@ -27,7 +29,6 @@ module Meli
   autoload :Shipment
   autoload :User
 
-  # Models
   autoload :Category
   autoload :CategorySuggest
 end
