@@ -6,7 +6,6 @@ module Meli
     # has_one :description, class_name: "Meli::Description"
     # belongs_to :description, class_name: "Meli::Description"
 
-
     cattr_accessor :options
 
     class << self
@@ -131,10 +130,146 @@ module Meli
       super.merge( description: description )
     end
 
-    def description
-      unless descriptions.empty?
+    def description(force = false)
+      if description? and !force
+        description?
+      elsif descriptions? and self.id?
         @description_klass = find_or_create_resource_for_collection(:description)
         @description_klass.find_every(params: { item_id: self.id }).first
+      end
+    end
+
+
+
+    # Validate to publish
+    # permited attributes:
+      # [:buying_mode, :listing_type_id, :status, :accepts_mercadopago,
+      #   :automatic_relist, :available_quantity, :catalog_product_id, :category_id,
+      #   :condition, :coverage_areas, :currency_id, :description, :location,
+      #   :non_mercado_pago_payment_methods, :official_store_id, :pictures, :price,
+      #   :seller_address, :seller_custom_field, :shipping, :site_id, :start_time,
+      #   :title, :variations, :video_id, :warranty]
+
+    def serializable_shipping
+      if shipping = self.shipping?
+        shipping_hash = ActiveSupport::HashWithIndifferentAccess.new
+        shipping_hash[:local_pick_up] = shipping.local_pick_up?.to_bool # FORCE Boolean
+
+        # if shipping.free_shipping?
+        #   shipping_hash[:free_shipping ] = shipping.free_shipping.to_bool # FORCE Boolean
+        # end
+
+        case shipping_hash[:mode] = shipping.mode?
+        when "me1"
+          # code here
+        when "me2"
+          # code here
+
+        # when "custom"
+          # TO FIX: https://gist.github.com/gullitmiranda/2ba389dbb5bbf3378c8f#file-shipping_custom-json
+          # shipping_hash[:costs] = (shipping.costs? || []).map do |cost|
+          #   {
+          #     name: cost.name?,
+          #     cost: cost.cost?.to_f # FORCE Float
+          #   }
+          # end
+        else
+          shipping_hash.delete(:mode)
+        end
+
+        shipping_hash[:dimensions] = shipping.dimensions? if shipping.dimensions?
+
+        shipping_hash
+      end
+    end
+
+    def serializable_non_mercado_pago_payment_methods
+      if methods = self.non_mercado_pago_payment_methods?
+        methods.map do |method|
+          method.is_a?(String) ? { id: method } : method
+        end
+      end
+    end
+
+    def attributes_to_encode
+      hash = ActiveSupport::HashWithIndifferentAccess.new({
+        title:                            self.title?                                       , # Test Item - Do Not Bid
+        buying_mode:                      self.buying_mode?                                 , #
+        listing_type_id:                  (self.listing_type_id?  || :bronze).to_s          , # bronze  - FORCE String
+        status:                           self.status?                                      , #
+        accepts_mercadopago:              self.accepts_mercadopago?                         , #
+        automatic_relist:                 self.automatic_relist?                            , #
+        available_quantity:               self.available_quantity?.to_i                     , # 1       - FORCE Integer
+        catalog_product_id:               self.catalog_product_id?                          , #
+        category_id:                      self.category_id?                                 , # MLA3530
+        condition:                        self.condition?.to_s                              , # new     - FORCE String
+        coverage_areas:                   self.coverage_areas?                              , #
+        currency_id:                      (self.currency_id? || "BRL" )                     , # BRL
+        description:                      self.description?                                 , #
+        location:                         self.location?                                    , #
+        non_mercado_pago_payment_methods: self.serializable_non_mercado_pago_payment_methods, # non_mercado_pago_payment_methods to Map (array of hash)
+        official_store_id:                self.official_store_id?                           , #
+        pictures:                         self.pictures?                                    , #
+        price:                            self.price?.to_f                                  , # 10      - FORCE Float
+        seller_address:                   self.seller_address?                              , #
+        seller_custom_field:              self.seller_custom_field?                         , #
+        shipping:                         self.serializable_shipping                        , # shipping to hash normalized
+        site_id:                          self.site_id?                                     , #
+        start_time:                       self.start_time?                                  , #
+        variations:                       self.variations?                                  , #
+        video_id:                         self.video_id?                                    , #
+        warranty:                         self.warranty?                                      #
+      })
+    end
+
+    def encode(options = {})
+      attributes_to_encode.send("to_#{self.class.format.extension}", options)
+    end
+
+    def validate(opts={})
+      run_callbacks :validate do
+        opts = {
+          raise_errors: false
+        }.merge(opts)
+
+        puts "\n\n\n"
+        puts " ----  Validate item -----"
+        puts " --> path: #{collection_path}/validate"
+        puts " --> encode: #{encode_to_validate}"
+        puts " --> opts: #{opts}"
+        puts "\n\n\n"
+        old_status = self.status?
+
+        connection.post("#{collection_path}/validate", encode, opts).tap do |response|
+          puts " --> response status: #{response.status}"
+          puts " --> response error: {#{response.error.present?}} (#{response.error.class}) #{response.error.inspect}"
+
+          load_attributes_from_response(response)
+
+          # use old_status instead of response.status
+          self.attributes[:status] = old_status if self.status == response.status
+
+          # 200..299      - ok
+          # 301..303, 307 - redirecting
+          # 300..399      - non-redirecting 3xx statuses
+          # 402           - payment required
+          # 400..599      - all errors statutes
+          self.validation_code = response.status
+
+          case response.status
+          when 200..299, 300..399, 402
+            self.status = response.status == 402 ? :payment_required : :unpublished
+
+            self.validation_status = :valid
+            self.validation_errors = nil
+          else
+            self.status = :invalid_data
+
+            cause = response.parsed["cause"]
+            self.validation_status = cause.present? ? cause.first["code"].gsub(/^item\./, '') : response.status
+            self.validation_errors = response.parsed["cause"]
+          end
+        end
       end
     end
   end

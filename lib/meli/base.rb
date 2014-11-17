@@ -187,25 +187,29 @@ module Meli
         attributes = Formats.remove_root(attributes) if remove_root
 
         attributes.each do |key, value|
+          # force string
+          key = key.to_s
+
           attr_value =  case value
-                          when Array
-                            resource = nil
-                            value.map do |attrs|
-                              if attrs.is_a?(Hash)
-                                resource ||= find_or_create_resource_for_collection(key)
-                                resource.new(attrs, persisted)
-                              else
-                                attrs.duplicable? ? attrs.dup : attrs
-                              end
+                        when Array
+                          resource = nil
+                          value.map do |attrs|
+                            if attrs.is_a?(Hash)
+                              resource ||= find_or_create_resource_for_collection(key)
+                              resource.new(attrs, persisted)
+                            else
+                              attrs.duplicable? ? attrs.dup : attrs
                             end
-                          when Hash
-                            resource = find_or_create_resource_for(key)
-                            resource.new(value, persisted)
-                          else
-                            value.duplicable? ? value.dup : value
+                          end
+                        when Hash
+                          resource = find_or_create_resource_for(key)
+                          resource.new(value, persisted)
+                        else
+                          value.duplicable? ? value.dup : value
                         end
 
-          self.send("#{key.to_s}", attr_value)
+          key = "_#{key}" if key == "attributes"
+          self.send(key, attr_value)
         end
 
         @default_attributes = @attributes
@@ -273,12 +277,20 @@ module Meli
     end
 
 
-    protected
-
       # Update the resource on the remote service.
       def update
         run_callbacks :update do
           connection.put(element_path(prefix_options), encode_changes, self.class.headers).tap do |response|
+            load_attributes_from_response(response)
+          end
+        end
+      end
+
+      # Create (i.e., \save to the remote service) the \new resource.
+      def create
+        run_callbacks :create do
+          connection.post(collection_path, encode, self.class.headers).tap do |response|
+            self.id = id_from_response(response)
             load_attributes_from_response(response)
           end
         end
@@ -302,6 +314,8 @@ module Meli
         end
       end
 
+
+    protected
 
 
       def method_missing(method_symbol, *arguments) #:nodoc:
