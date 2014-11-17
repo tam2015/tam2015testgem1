@@ -148,15 +148,30 @@ module Meli
               when String
                 payload[:body] = argument
               when Hash
+                payload[:headers] ||= {}
+
+                if argument.include?(:headers)
+                  payload[:headers].merge!(argument[:headers])
+                  argument.delete(:headers)
+                end
+
+                if argument.include?("Content-Type")
+                  payload[:headers]["Content-Type"] = argument["Content-Type"]
+                  argument.delete("Content-Type")
+                end
+
                 payload.merge!(argument)
             end
           end
 
           puts " ---> payload to send: #{[payload]}"
+          puts "\n\n"
 
           response = @oauth_connection.send(method, path, payload)
-          puts " ---> response: #{response.inspect}"
+          puts " ---> response: #{response}"
           puts " ---> response.body: #{response.body}"
+          puts "\n\n"
+          # puts " ---> response inspect: #{response.inspect}"
           response
         end
       else
