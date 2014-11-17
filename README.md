@@ -66,10 +66,14 @@ NOTE: All configs in [lib/config/meli.rb]( https://github.com/gullitmiranda/meli
   - __Meli::User__ 
     - GET: [ find(id), me ]
       + Notes: `User.me` is `User.find("me")` alias
+  - __Meli::Shipment__ 
+    - GET: [ find(shipment_id), find_by_order_id(order_id) ]
 
 ## Usage
 
 TODO: Write usage instructions here
+
+
 
 ## Contributing
 
