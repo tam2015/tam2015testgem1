@@ -203,23 +203,29 @@ module Meli
         catalog_product_id:               self.catalog_product_id?                          , #
         category_id:                      self.category_id?                                 , # MLA3530
         condition:                        self.condition?.to_s                              , # new     - FORCE String
-        coverage_areas:                   self.coverage_areas?                              , #
-        currency_id:                      (self.currency_id? || "BRL" )                     , # BRL
+        currency_id:                      (self.currency_id? || "BRL")                      , # BRL
         description:                      self.description?                                 , #
-        location:                         self.location?                                    , #
         non_mercado_pago_payment_methods: self.serializable_non_mercado_pago_payment_methods, # non_mercado_pago_payment_methods to Map (array of hash)
         official_store_id:                self.official_store_id?                           , #
-        pictures:                         self.pictures?                                    , #
         price:                            self.price?.to_f                                  , # 10      - FORCE Float
-        seller_address:                   self.seller_address?                              , #
         seller_custom_field:              self.seller_custom_field?                         , #
-        shipping:                         self.serializable_shipping                        , # shipping to hash normalized
         site_id:                          self.site_id?                                     , #
         start_time:                       self.start_time?                                  , #
-        variations:                       self.variations?                                  , #
         video_id:                         self.video_id?                                    , #
         warranty:                         self.warranty?                                      #
       })
+
+      hash[:location      ] = self.location               if self.location?
+      hash[:coverage_areas] = self.coverage_areas         if self.coverage_areas?
+
+      hash[:shipping      ] = self.serializable_shipping  if self.shipping?       # shipping to hash normalized
+      hash[:seller_address] = self.seller_address         if self.seller_address?
+      hash[:seller_contact] = self.seller_contact         if self.seller_contact?
+
+      hash[:variations    ] = self.variations             if self.variations?
+      hash[:pictures      ] = self.pictures               if self.pictures?
+
+      hash
     end
 
     def encode(options = {})
@@ -235,7 +241,7 @@ module Meli
         puts "\n\n\n"
         puts " ----  Validate item -----"
         puts " --> path: #{collection_path}/validate"
-        puts " --> encode: #{encode_to_validate}"
+        puts " --> encode: #{encode}"
         puts " --> opts: #{opts}"
         puts "\n\n\n"
         old_status = self.status?
@@ -243,6 +249,7 @@ module Meli
         connection.post("#{collection_path}/validate", encode, opts).tap do |response|
           puts " --> response status: #{response.status}"
           puts " --> response error: {#{response.error.present?}} (#{response.error.class}) #{response.error.inspect}"
+          puts " --> response parsed: #{response.parsed}"
 
           load_attributes_from_response(response)
 
@@ -257,17 +264,37 @@ module Meli
           self.validation_code = response.status
 
           case response.status
-          when 200..299, 300..399, 402
-            self.status = response.status == 402 ? :payment_required : :unpublished
+          when 200..299, 300..399
+            self.status = :unpublished
+
+            self.validation_status = :valid
+            self.validation_errors = nil
+          when 402
+            self.status = :payment_required
 
             self.validation_status = :valid
             self.validation_errors = nil
           else
             self.status = :invalid_data
 
-            cause = response.parsed["cause"]
-            self.validation_status = cause.present? ? cause.first["code"].gsub(/^item\./, '') : response.status
-            self.validation_errors = response.parsed["cause"]
+            cause   = response.parsed["cause"]
+            error   = response.parsed["error"]
+            message = response.parsed["message"]
+            if cause.present?
+              self.validation_status = cause.first["code"].gsub(/^item\./, '')
+              self.validation_errors = cause
+            elsif error.present?
+              self.validation_status = message
+              self.validation_errors = [
+                {
+                  "code"    => error,
+                  "message" => message
+                }
+              ]
+            else
+              self.validation_status = response.status
+              self.validation_errors = cause
+            end
           end
         end
       end
