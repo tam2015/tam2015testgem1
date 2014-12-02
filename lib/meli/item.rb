@@ -191,6 +191,29 @@ module Meli
       end
     end
 
+    def serializable_variations
+      if self.variations?
+        _variations = []
+
+        self.variations?.each_with_index do |variation, ix|
+          _variation = ActiveSupport::HashWithIndifferentAccess.new({ attribute_combinations: [] })
+
+          _variation[:attribute_combinations] << { "id" => "33000", "value_id" => variation.color_primary_id    } if variation.color_primary_id?
+          _variation[:attribute_combinations] << { "id" => "43000", "value_id" => variation.color_secundary_id  } if variation.color_secundary_id?
+          _variation[:attribute_combinations] << { "id" => "63000", "value_id" => variation.size_id             } if variation.size_id?
+
+          _variation[:available_quantity  ] = variation.available_quantity? || self.available_quantity
+
+          _variation[:price               ] = variation.price.to_i  if variation.price?
+          _variation[:picture_ids         ] = variation.picture_ids    if variation.picture_ids?
+
+          _variations[ix] = _variation
+        end
+
+        _variations
+      end
+    end
+
     def attributes_to_encode
       hash = ActiveSupport::HashWithIndifferentAccess.new({
         title:                            self.title?                                       , # Test Item - Do Not Bid
@@ -199,7 +222,6 @@ module Meli
         status:                           self.status?                                      , #
         accepts_mercadopago:              self.accepts_mercadopago?                         , #
         automatic_relist:                 self.automatic_relist?                            , #
-        available_quantity:               self.available_quantity?.to_i                     , # 1       - FORCE Integer
         catalog_product_id:               self.catalog_product_id?                          , #
         category_id:                      self.category_id?                                 , # MLA3530
         condition:                        self.condition?.to_s                              , # new     - FORCE String
@@ -207,7 +229,6 @@ module Meli
         description:                      self.description?                                 , #
         non_mercado_pago_payment_methods: self.serializable_non_mercado_pago_payment_methods, # non_mercado_pago_payment_methods to Map (array of hash)
         official_store_id:                self.official_store_id?                           , #
-        price:                            self.price?.to_f                                  , # 10      - FORCE Float
         seller_custom_field:              self.seller_custom_field?                         , #
         site_id:                          self.site_id?                                     , #
         start_time:                       self.start_time?                                  , #
@@ -222,8 +243,15 @@ module Meli
       hash[:seller_address] = self.seller_address         if self.seller_address?
       hash[:seller_contact] = self.seller_contact         if self.seller_contact?
 
-      hash[:variations    ] = self.variations             if self.variations?
-      hash[:pictures      ] = self.pictures               if self.pictures?
+      hash[:picture_ids   ] = self.picture_ids            if self.picture_ids?
+
+      if self.variations?
+        hash[:variations        ] = self.serializable_variations
+      else
+        # FORCE Integer
+        hash[:price               ] = self.price?.to_i
+        hash[:available_quantity  ] = self.available_quantity?.to_i
+      end
 
       hash
     end
@@ -284,7 +312,12 @@ module Meli
               self.validation_status = cause.first["code"].gsub(/^item\./, '')
               self.validation_errors = cause
             elsif error.present?
-              self.validation_status = message
+              case message
+              when "body.invalid_field_types"
+                error, message = [message, error]
+              end
+
+              self.validation_status = error
               self.validation_errors = [
                 {
                   "code"    => error,
