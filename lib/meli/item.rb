@@ -233,7 +233,8 @@ module Meli
         site_id:                          self.site_id?                                     , #
         start_time:                       self.start_time?                                  , #
         video_id:                         self.video_id?                                    , #
-        warranty:                         self.warranty?                                      #
+        warranty:                         self.warranty?                                    ,#
+        pictures:                         self.pictures?.map { |pic| {source: pic} }
       })
 
       hash[:location      ] = self.location               if self.location?
