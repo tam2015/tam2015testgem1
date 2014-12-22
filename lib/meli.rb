@@ -28,6 +28,7 @@ module Meli
   autoload :Order
   autoload :Shipment
   autoload :User
+  autoload :Trend
 
   autoload :Category
   autoload :CategorySuggest
