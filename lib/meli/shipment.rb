@@ -9,17 +9,12 @@ module Meli
 
     belongs_to :order, class_name: "Meli::Order"
 
-
     def order=(order)
       self.prefix_options[:order_id] = order.id
     end
 
     # override by instantiate_record
     def self.instantiate_collection(record, original_params = {}, prefix_options = {})
-      puts "\n"
-      puts " ==> instantiate_collection \n -> #{record}\n -> #{prefix_options}"
-      puts "\n"
-
       instantiate_record record, prefix_options
     end
 
@@ -37,8 +32,3 @@ module Meli
 
   end
 end
-
-
-# Meli::Shipment.find
-# orders/{Order_id}/shipments ---- /shipments/{Shipment_id}
-# Meli::Shipment.by_order_id

@@ -120,22 +120,11 @@ module Meli
   private
 
     def request(method, path, *arguments)
-      puts "\n\n\n"
-      puts " ---> use_oauth #{@use_oauth}"
-      puts " ---> path #{path}"
-      puts " ---> arguments #{arguments}"
-      puts " ---> site #{site.inspect}"
-      puts " ---> self #{self.inspect}"
-      puts " ---> method #{method}"
+      # puts "\n\n\n# Meli::Connection.request..."
       if @use_oauth
-        puts " ---> oauth_connection #{@oauth_connection.inspect}"
-        puts " ---> token #{@oauth_connection.token}" if @oauth_connection
         if @oauth_connection == nil
           raise ArgumentError, "@oauth_connection was required for authentication."
         else
-          puts " ---> with auth -----"
-          puts " ---> expired? #{@oauth_connection.expired?}"
-          puts " ---> token #{@oauth_connection.token}"
 
           if @oauth_connection.expired?
             @oauth_connection = @oauth_connection.refresh!
@@ -164,18 +153,16 @@ module Meli
             end
           end
 
-          puts " ---> payload to send: #{[payload]}"
-          puts "\n\n"
+          puts "# method: #{method.inspect}"
+          puts "# path: #{path.inspect}"
+          puts "# arguments: #{arguments.inspect}"
+          puts "# payload: #{payload.inspect}"
 
           response = @oauth_connection.send(method, path, payload)
-          puts " ---> response: #{response}"
-          puts " ---> response.body: #{response.body}"
-          puts "\n\n"
-          # puts " ---> response inspect: #{response.inspect}"
+
           response
         end
       else
-        puts " ---> connection #{@connection.inspect}"
         super(method, path, *arguments)
       end
 

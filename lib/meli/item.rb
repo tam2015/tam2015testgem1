@@ -62,10 +62,6 @@ module Meli
         has_results = true
         ids = []
 
-        puts "\n\n\n"
-        puts "opts= #{opts}"
-        puts "\n\n\n"
-
         while has_results && opts[:pages] != opts[:page] do
           params = {  limit:  opts[:limit],
                       offset: opts[:offset] }
@@ -107,11 +103,6 @@ module Meli
 
         all_ids(opts) do |partial_ids, data, partial_opts|
           partial_items = partial_ids.map do |id|
-            puts "\n\n\n"
-            puts "here? (#{self}) (#{parent})"
-            puts "here? (#{ancestors})"
-            puts "\n\n\n"
-
             find_single(id, opts, false)
           end
 
@@ -267,18 +258,18 @@ module Meli
           raise_errors: false
         }.merge(opts)
 
-        puts "\n\n\n"
-        puts " ----  Validate item -----"
-        puts " --> path: #{collection_path}/validate"
-        puts " --> encode: #{encode}"
-        puts " --> opts: #{opts}"
-        puts "\n\n\n"
+        # puts "\n\n\n"
+        # puts " ----  Validate item -----"
+        # puts " --> path: #{collection_path}/validate"
+        # puts " --> encode: #{encode}"
+        # puts " --> opts: #{opts}"
+        # puts "\n\n\n"
         old_status = self.status?
 
         connection.post("#{collection_path}/validate", encode, opts).tap do |response|
-          puts " --> response status: #{response.status}"
-          puts " --> response error: {#{response.error.present?}} (#{response.error.class}) #{response.error.inspect}"
-          puts " --> response parsed: #{response.parsed}"
+          # puts " --> response status: #{response.status}"
+          # puts " --> response error: {#{response.error.present?}} (#{response.error.class}) #{response.error.inspect}"
+          # puts " --> response parsed: #{response.parsed}"
 
           load_attributes_from_response(response)
 
