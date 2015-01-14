@@ -6,8 +6,8 @@ require 'meli/version'
 Gem::Specification.new do |spec|
   spec.name          = "meli"
   spec.version       = Meli::VERSION
-  spec.authors       = ["Gullit Miranda"]
-  spec.email         = ["gullitmiranda@gmail.com"]
+  spec.authors       = ["Gullit Miranda, Marcus Gadbem"]
+  spec.email         = ["gullitmiranda@gmail.com", "mcsgad@gmail.com"]
   spec.summary       = %q{Meli gem interacts with the official API Mercadolibre.}
   spec.description   = %q{Meli gem interacts with the official API Mercadolibre.}
   spec.homepage      = "https://bitbucket.org/aircrm/meli"
