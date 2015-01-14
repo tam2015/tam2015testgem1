@@ -68,12 +68,14 @@ NOTE: All configs in [lib/config/meli.rb]( https://github.com/gullitmiranda/meli
       + Notes: `User.me` is `User.find("me")` alias
   - __Meli::Shipment__ 
     - GET: [ find(shipment_id), find_by_order_id(order_id) ]
+  - __Meli::Feedback__ 
+    - GET: [ find_by_order_id(order_id), post_sale_feedback(order_id, params), post_purchase_feedback(order_id, params), change_feedback(feedback_id, params) ]
+  - __Meli::Trend__ 
+    - GET: [ find(site_id), find_by_category_id(category_id) ]
 
 ## Usage
 
 TODO: Write usage instructions here
-
-
 
 ## Contributing
 
