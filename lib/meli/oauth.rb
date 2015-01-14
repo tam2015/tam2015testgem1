@@ -134,8 +134,10 @@ module Meli
 
           arguments.each do |argument|
             case argument
+
               when String
                 payload[:body] = argument
+
               when Hash
                 payload[:headers] ||= {}
 
@@ -153,10 +155,11 @@ module Meli
             end
           end
 
-          puts "# method: #{method.inspect}"
-          puts "# path: #{path.inspect}"
-          puts "# arguments: #{arguments.inspect}"
-          puts "# payload: #{payload.inspect}"
+          # Debugger
+          # puts "# method: #{method.inspect}"
+          # puts "# path: #{path.inspect}"
+          # puts "# arguments: #{arguments.inspect}"
+          # puts "\n\n# payload: #{payload.inspect}"
 
           response = @oauth_connection.send(method, path, payload)
 

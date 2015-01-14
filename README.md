@@ -72,6 +72,8 @@ NOTE: All configs in [lib/config/meli.rb]( https://github.com/gullitmiranda/meli
     - GET: [ find_by_order_id(order_id), post_sale_feedback(order_id, params), post_purchase_feedback(order_id, params), change_feedback(feedback_id, params) ]
   - __Meli::Trend__ 
     - GET: [ find(site_id), find_by_category_id(category_id) ]
+  - __Meli::Question__ 
+    - GET: [ search_by_item_id(item_id), ask_question(item_id, question), answer_question(item_id, question) ]
 
 ## Usage
 

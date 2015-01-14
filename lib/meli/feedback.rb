@@ -12,12 +12,12 @@ module Meli
     end
 
     def self.default_options
-      { rating:       "neutral",
-        fulfilled:    true,
-        reason:       "",
-        reply:        "",
-        message:      "Operação finalizada.",
-        status:       "ACTIVE" }
+      { "rating"      => "neutral",
+        "fulfilled"   => true,
+        "reason"      => "",
+        "reply"       => "",
+        "message"     => "Operação finalizada.",
+        "status"      => "ACTIVE" }
     end
 
     # override by instantiate_record
@@ -32,21 +32,21 @@ module Meli
     end
 
     def self.post_sale_feedback(order_id, params = {})
-      path    = "/orders/#{order_id}/feedback/sale"
+      path    = "/orders/#{order_id}/feedback/sale?version=3.0"
       headers = default_options.merge(params)
       data    = format.decode(connection.post(path, headers).body)
       instantiate_record data
     end
 
     def self.post_purchase_feedback(order_id, params = {})
-      path    = "/orders/#{order_id}/feedback/purchase"
+      path    = "/orders/#{order_id}/feedback/purchase?version=3.0"
       headers = default_options.merge(params)
       data    = format.decode(connection.put(path, headers).body)
       instantiate_record data
     end
 
     def self.change_feedback(feedback_id, params = {})
-      path    = "/feedback/#{feedback_id}"
+      path    = "/feedback/#{feedback_id}?version=3.0"
       headers = default_options.merge(params)
       data    = format.decode(connection.put(path, headers).body)
       instantiate_record data
