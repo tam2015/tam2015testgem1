@@ -76,7 +76,7 @@ module Meli
     end
 
     # GET /my/received_questions/search
-    def self.all_my_questions(user_id)
+    def self.all_my_questions_from_user(user_id)
       path    = "/my/received_questions/search"
       data    = format.decode(connection.get(path, headers).body)
       instantiate_collection data
