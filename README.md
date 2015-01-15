@@ -36,7 +36,6 @@ Meli.configure do
   config.client_secret  = ENV['MERCADOLIBRE_APP_SECRET'   ]
   config.callback_url   = ENV['MERCADOLIBRE_CALLBACK_URL' ]
 
-
   # Optional (is default)
   # Site Country
   # For other country check https://api.mercadolibre.com/sites/
@@ -55,29 +54,85 @@ end
 
 NOTE: All configs in [lib/config/meli.rb]( https://github.com/gullitmiranda/meli/blob/master/lib/config/meli.rb )
 
-## Models Structure
+## Endpoints
 
-  - __Meli::Category__ 
-    - GET: [ all, find(id), first, last ]
-  - __Meli::CategorySuggest__
-    - GET: [ find("query") ]
-  - __Meli::Item__ 
-    - GET: [ all(filters), find(id), first, last, all_ids(filters) ]
-  - __Meli::User__ 
-    - GET: [ find(id), me ]
-      + Notes: `User.me` is `User.find("me")` alias
-  - __Meli::Shipment__ 
-    - GET: [ find(shipment_id), find_by_order_id(order_id) ]
-  - __Meli::Feedback__ 
-    - GET: [ find_by_order_id(order_id), post_sale_feedback(order_id, params), post_purchase_feedback(order_id, params), change_feedback(feedback_id, params) ]
-  - __Meli::Trend__ 
-    - GET: [ find(site_id), find_by_category_id(category_id) ]
-  - __Meli::Question__ 
-    - GET: [ search_by_item_id(item_id), ask_question(item_id, question), answer_question(item_id, question) ]
+- __Meli::Category__ (not implemented)
 
-## Usage
+- __Meli::CategorySuggest__ (not implemented)
 
-TODO: Write usage instructions here
+- __Meli::Item__
+
+```ruby
+Meli::Item.all_ids(opts, &block)
+Meli::Item.find_every(opts, &block) # (uses all_ids)
+Meli::Item.validate(opts)
+```
+
+- __Meli::User__
+
+```ruby
+Meli::User.me
+```
+
+- __Meli::Shipment__
+
+```ruby
+Meli::Shipment.find(shipment_id)
+Meli::Shipment.find_by_order_id(order_id)
+Meli::Shipment.set_delivered!(shipment_id)
+Meli::Shipment.user_preferences(customer_id)
+Meli::Shipment.options_by_item_id(item_id)
+Meli::Shipment.methods_by_item_id(item_id)
+Meli::Shipment.services_by_item_id(item_id)
+Meli::Shipment.calculate_cost(customer_id, zip_code, dimensions, weight)
+Meli::Shipment.calculate_cost_by_site_id(site_id, zip_code_from, zip_code_to, dimensions, weight)
+Meli::Shipment.available_category_filters_for_customer(customer_id, category_id)
+Meli::Shipment.print_label(shipment_ids)
+```
+
+- __Meli::Feedback__
+
+```ruby
+Meli::Feedback.find_by_order_id(order_id)
+Meli::Feedback.post_feedback(order_id, params)
+Meli::Feedback.post_sale_feedback(order_id, params)
+Meli::Feedback.get_purchase_feedback(order_id)
+Meli::Feedback.post_purchase_feedback(order_id, params)
+Meli::Feedback.reply_feedback(feedback_id, params)
+```
+
+- __Meli::Trend__
+
+```ruby
+Meli::Trend.find(site_id)
+Meli::Trend.find_by_category_id(site_id, category_id)
+```
+
+- __Meli::Trend__
+
+```ruby
+Meli::Question.find(question_id)
+Meli::Question.find_by_item_id(item_id)
+Meli::Question.ask_question(item_id, params)
+Meli::Question.answer_question(question_id, params)
+Meli::Question.list_blacklist(user_id)
+Meli::Question.add_user_to_blacklist(user_id)
+Meli::Question.remove_user_from_blacklist(user_id)
+Meli::Question.all_my_questions_from_user(user_id)
+```
+
+## Updating gem
+You will need to add Gemfury as a remote repository for Meli:
+
+```bash
+$ git remote add fury https://git.fury.io/aircrm/meli.git
+```
+
+And upload the source content with:
+
+```bash
+$ git push fury master
+```
 
 ## Contributing
 
