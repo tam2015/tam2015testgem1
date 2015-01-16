@@ -156,10 +156,13 @@ module Meli
           end
 
           # Debugger
+          # puts "\n\n"
+          # puts"* Meli::Request: -------------------------------"
           # puts "# method: #{method.inspect}"
           # puts "# path: #{path.inspect}"
           # puts "# arguments: #{arguments.inspect}"
-          # puts "\n\n# payload: #{payload.inspect}"
+          # puts "\n# payload: #{payload.inspect}"
+          # puts "\n\n"
 
           response = @oauth_connection.send(method, path, payload)
 
