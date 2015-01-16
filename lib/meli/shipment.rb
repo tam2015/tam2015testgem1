@@ -29,7 +29,7 @@ module Meli
     def self.set_delivered!(shipment_id)
       path = "/shipments/#{shipment_id}"
       headers = {
-        "status": "delivered"
+        "status" => "delivered"
       }
       data = format.decode(connection.put(path, headers).body)
       instantiate_record data
@@ -107,7 +107,7 @@ module Meli
     end
 
     # /shipment_labels
-    def self.print_label(*shipment_ids, save_pdf = "Y")
+    def self.print_label(save_pdf = "Y", *shipment_ids)
       shipment_ids_str = shipment_ids.join(",")
       path = "/shipment_labels?shipment_ids=#{shipment_ids_str}"
       data = format.decode(connection.get(path, headers).body)

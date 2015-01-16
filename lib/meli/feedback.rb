@@ -33,14 +33,14 @@ module Meli
 
     def self.post_feedback(order_id, params = {})
       path    = "/orders/#{order_id}/feedback?version=3.0"
-      headers = default_options.merge(params)
+      headers = params
       data    = format.decode(connection.post(path, headers).body)
       instantiate_record data
     end
 
     def self.post_sale_feedback(order_id, params = {})
       path    = "/orders/#{order_id}/feedback/sale?version=3.0"
-      headers = default_options.merge(params)
+      headers = params
       data    = format.decode(connection.put(path, headers).body)
       instantiate_record data
     end
@@ -53,14 +53,14 @@ module Meli
 
     def self.post_purchase_feedback(order_id, params = {})
       path    = "/orders/#{order_id}/feedback/purchase?version=3.0"
-      headers = default_options.merge(params)
+      headers = params
       data    = format.decode(connection.put(path, headers).body)
       instantiate_record data
     end
 
     def self.reply_feedback(feedback_id, params = {})
       path    = "/feedback/#{feedback_id}?version=3.0"
-      headers = default_options.merge(params)
+      headers = params
       data    = format.decode(connection.put(path, headers).body)
       instantiate_record data
     end
