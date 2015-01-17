@@ -7,6 +7,24 @@ module Meli
 
     belongs_to :item, class_name: "Meli::Item"
 
+    def self.default_options
+      { limit: 50,
+        offset: 0,
+        pages: -1,
+        page:   0 }
+    end
+
+    def self.options=(opts)
+      @options = default_options.merge(opts)
+    end
+
+    def self.options
+      unless defined? @options
+        @options = default_options
+      end
+      @options
+    end
+
     # override by instantiate_record
     def self.instantiate_collection(record, original_params = {}, prefix_options = {})
       instantiate_record record, prefix_options
@@ -76,10 +94,36 @@ module Meli
     end
 
     # GET /my/received_questions/search
-    def self.all_my_questions_from_user(user_id)
-      path    = "/my/received_questions/search"
-      data    = format.decode(connection.get(path, headers).body)
-      instantiate_collection data
+    def self.all_questions(opts={}, &block)
+      user_id = options.delete(:user_id) || User.me.id
+      opts = options.merge opts
+      from = "/my/received_questions/search"
+      has_results = true
+      questions = []
+
+      while has_results && opts[:pages] != opts[:page] do
+        params = {  limit:  opts[:limit],
+                    offset: opts[:offset] }
+
+        path = "#{from}#{query_string(params)}"
+        data = format.decode(connection.get(path, headers).body) || []
+
+
+        results = data["questions"]
+        has_results = (results.any? and results.count == opts[:limit])
+
+        opts[:page   ] += 1
+        opts[:offset ] += opts[:limit]
+
+        yield(results, data, options) if block_given?
+
+        questions.concat results
+      end
+
+      unless block_given?
+        questions.map! { |question| self.new(question) }
+      end
+
     end
 
   end

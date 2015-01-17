@@ -94,7 +94,15 @@ Meli::Shipment.print_label(shipment_ids)
 
 ```ruby
 Meli::Feedback.find_by_order_id(order_id)
-Meli::Feedback.post_feedback(order_id, params)
+
+feedback_params = {
+  "fulfilled" => true,
+  "rating"    => "neutral",
+  "message"   => "fine",
+  "reason"    => "THEY_DIDNT_ANSWER"
+}
+Meli::Feedback.post_feedback(order_id, feedback_params)
+
 Meli::Feedback.post_sale_feedback(order_id, params)
 Meli::Feedback.get_purchase_feedback(order_id)
 Meli::Feedback.post_purchase_feedback(order_id, params)
@@ -118,7 +126,7 @@ Meli::Question.answer_question(question_id, params)
 Meli::Question.list_blacklist(user_id)
 Meli::Question.add_user_to_blacklist(user_id)
 Meli::Question.remove_user_from_blacklist(user_id)
-Meli::Question.all_my_questions_from_user(user_id)
+Meli::Question.all_questions(params)
 ```
 
 ## Updating gem
