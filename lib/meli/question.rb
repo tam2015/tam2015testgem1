@@ -32,7 +32,7 @@ module Meli
 
     # GET /questions/{Question_id}
     def self.find(question_id)
-      path    = "/questions/#{item_id}"
+      path    = "/questions/#{question_id}"
       data    = format.decode(connection.get(path, headers).body)
       instantiate_record data
     end
@@ -67,30 +67,30 @@ module Meli
     end
 
     # GET /users/{Seller_id}/questions_blacklist
-    def self.list_blacklist(user_id)
-      path    = "/users/#{user_id}/questions_blacklist"
+    def self.list_blacklist(seller_id)
+      path    = "/users/#{seller_id}/questions_blacklist"
       data    = format.decode(connection.get(path, headers).body)
-      instantiate_collection data
+      # instantiate_collection data
     end
 
     # POST /users/{Seller_id}/questions_blacklist
-     def self.add_user_to_blacklist(user_id)
-      path    = "/users/#{user_id}/questions_blacklist"
+     def self.add_user_to_blacklist(seller_id, user_id)
+      path    = "/users/#{seller_id}/questions_blacklist"
       headers = {
         "user_id"   => user_id
       }
       data    = format.decode(connection.post(path, headers).body)
-      instantiate_collection data
+      # instantiate_collection data
     end
 
     # DELETE /users/{Seller_id}/questions_blacklist
-    def self.remove_user_from_blacklist(user_id)
-      path    = "/users/#{user_id}/questions_blacklist"
-      headers = {
-        "user_id"   => user_id
-      }
+    def self.remove_user_from_blacklist(seller_id, user_id)
+      path    = "/users/#{seller_id}/questions_blacklist/#{user_id}"
+      # headers = {
+      #   "user_id"   => user_id
+      # }
       data    = format.decode(connection.delete(path, headers).body)
-      instantiate_collection data
+      # instantiate_collection data
     end
 
     # GET /my/received_questions/search
