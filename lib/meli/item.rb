@@ -224,8 +224,8 @@ module Meli
         site_id:                          self.site_id?                                     , #
         start_time:                       self.start_time?                                  , #
         video_id:                         self.video_id?                                    , #
-        warranty:                         self.warranty?                                    ,#
-        pictures:                         self.pictures?.map { |pic| {source: pic} }
+        warranty:                         self.warranty?                                    #
+        #pictures:                         self.pictures?.map { |pic| {source: pic} }
       })
 
       hash[:location      ] = self.location               if self.location?
@@ -251,6 +251,12 @@ module Meli
     def encode(options = {})
       attributes_to_encode.send("to_#{self.class.format.extension}", options)
     end
+
+    def self.items_by_category_id(category_id)
+      path    = "sites/MLB/search?category=#{category_id}"
+      data    = format.decode(connection.get(path, headers).body)
+      instantiate_record data
+    end  
 
     def validate(opts={})
       run_callbacks :validate do
