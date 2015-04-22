@@ -256,7 +256,24 @@ module Meli
       path    = "sites/MLB/search?category=#{category_id}"
       data    = format.decode(connection.get(path, headers).body)
       instantiate_record data
-    end  
+    end
+
+    def self.visits_last_month(items_ids)
+      path    = "items/visits/time_window?ids=#{items_ids}&last=33&unit=day"
+      data    = format.decode(connection.get(path, headers).body)
+    end
+
+    def self.visits_by_period(items_ids, date_from, date_to)
+      path    = "items/#{items_ids}/visits?date_from=#{date_from}&date_to=#{date_to}"
+      data    = format.decode(connection.get(path, headers).body)
+    end
+
+    def self.search_by_text(text)
+      query = text.gsub(/\s+/, "%20")
+      path    = "/sites/MLB/search?q=#{query}&sort=price_asc"
+      data    = format.decode(connection.get(path, headers).body)
+      instantiate_record data
+    end
 
     def validate(opts={})
       run_callbacks :validate do
