@@ -58,11 +58,14 @@ module Meli
       instantiate_record data
     end
 
-    def self.reply_feedback(feedback_id, params = {})
-      path    = "/feedback/#{feedback_id}?version=3.0"
-      headers = params
-      data    = format.decode(connection.put(path, headers).body)
-      instantiate_record data
+    def self.reply_feedback(feedback_id, reply_text)
+      path    = "/feedback/#{feedback_id}/reply?version=3.0"
+      # headers = params
+      headers = {
+        "reply"      => reply_text
+      }      
+      data    = format.decode(connection.post(path, headers).body)
+      # instantiate_record data
     end
 
   end
