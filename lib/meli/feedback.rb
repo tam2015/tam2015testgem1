@@ -61,6 +61,7 @@ module Meli
     def self.reply_feedback(feedback_id, reply_text)
       path    = "/feedback/#{feedback_id}/reply?version=3.0"
       # headers = params
+      puts "\n\n\n\n\n\n\n\n\n ----------------------- reply_text_thiago #{reply_text}\n\n\n\n\n\n\n\n\n -----------------------"
       headers = {
         "reply"      => reply_text
       }      
