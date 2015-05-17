@@ -114,13 +114,5 @@ module Meli
       instantiate_record data
     end
 
-    def self.shipping_calculator(seller_zip_code, customer_zip_code, dimension)
-      self.use_oauth = false
-      path = "/sites/MLB/shipping_options?zip_code_from=#{seller_zip_code}&zip_code_to=#{customer_zip_code}&dimensions=#{dimension}"
-      data = format.decode(connection.get(path, headers).body)
-      instantiate_record data
-    end    
-
-
   end
 end
