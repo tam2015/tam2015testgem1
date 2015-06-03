@@ -5,13 +5,13 @@ module Meli
 
     @@oauth_connection = nil
 
-    self.auth_ssl_options= {
-      ssl: { version: "SSLv3"}
-    }
+    # self.auth_ssl_options= {
+    #   ssl: { version: "SSLv3"}
+    # }
 
-    self.ssl_options= {
-      ssl_version: 'SSLv3'
-    }
+    # self.ssl_options= {
+    #   ssl_version: 'SSLv3'
+    # }
 
     def self.oauth_connection= credentials
       if credentials.is_a? Hash
